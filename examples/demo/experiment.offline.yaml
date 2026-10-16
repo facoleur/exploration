@@ -1,0 +1,28 @@
+# Same benchmark with scripted agents and no judge: exercises the whole pipeline
+# without an API key.   bench all experiment.offline.yaml
+name: demo-offline
+dataset: dataset.jsonl
+artifacts_dir: artifacts
+database: {kind: sqlite, path: db/schema.sql}
+epochs: 2
+concurrency: 2
+primary_metric: result_match
+
+baseline:
+  name: careful
+  agent: {kind: scripted, script: scripts/careful.yaml}
+  prompt: prompts/system_v1.md
+  artifacts: {tables: tables@v1, glossary: glossary@v2, flows: flows@v1}
+  tools: [list_tables, search_catalog, describe_table, lookup_glossary, lookup_flow, run_sql]
+
+ablations:
+  - name: naive
+    description: skips the glossary, so it misses business rules
+    set: {agent.params.script: scripts/naive.yaml, artifacts.glossary: null}
+    remove_tools: [lookup_glossary]
+
+scorers:
+  - kind: result_match
+  - kind: answer_values
+  - kind: tables
+  - kind: efficiency

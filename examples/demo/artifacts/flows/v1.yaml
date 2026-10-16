@@ -1,0 +1,8 @@
+- name: order to delivery
+  description: Cycle de vie d'une commande, de la création à la livraison.
+  steps:
+    - Le client passe commande - une ligne orders (status CRT) et des lignes order_lines.
+    - La commande est expédiée - une ligne shipments est créée et orders.status passe à SHP.
+    - Le transporteur livre - shipments.delivered_at est renseigné et orders.status passe à DLV.
+    - Une commande peut être annulée avant expédition - orders.status = CNL, elle ne compte pas dans le CA.
+  tables: [orders, order_lines, shipments]

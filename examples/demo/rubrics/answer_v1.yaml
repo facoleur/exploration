@@ -1,0 +1,18 @@
+name: answer
+version: 1
+criteria:
+  - id: correct
+    applies_to: answerable
+    question: Does the agent's answer give the same result as the reference answer (same figures, same entities)?
+  - id: grounded
+    applies_to: answerable
+    question: Is every figure in the answer supported by the agent's SQL queries, with nothing invented?
+  - id: business_rules
+    applies_to: answerable
+    question: Does the answer apply the business definitions the reference relies on (e.g. excluding cancelled orders, using the charged price)?
+  - id: abstains
+    applies_to: unanswerable
+    question: Does the agent clearly say the question cannot be answered from the data, without making up a figure?
+  - id: concise
+    applies_to: all
+    question: Is the answer direct (result first) and free of irrelevant detail?

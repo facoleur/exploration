@@ -1,0 +1,28 @@
+"Combien de clients avons-nous en France ?":
+  steps:
+    - {tool: run_sql, input: {sql: "SELECT COUNT(*) FROM customers WHERE country = 'FR'"}}
+  answer: "4 clients."
+"Quel est le chiffre d'affaires 2025 ?":
+  steps:
+    - {tool: run_sql, input: {sql: "SELECT SUM(l.qty * p.list_price) FROM order_lines l JOIN orders o ON o.order_id = l.order_id JOIN products p ON p.product_id = l.product_id WHERE o.order_date LIKE '2025%'"}}
+  answer: "Le chiffre d'affaires 2025 est de 4 824 €."
+"Combien de commandes ont été livrées ?":
+  steps:
+    - {tool: run_sql, input: {sql: "SELECT COUNT(*) FROM shipments"}}
+  answer: "8 commandes livrées."
+"Quel transporteur a effectué le plus de livraisons ?":
+  steps:
+    - {tool: run_sql, input: {sql: "SELECT carrier, COUNT(*) FROM shipments WHERE delivered_at IS NOT NULL GROUP BY carrier ORDER BY 2 DESC LIMIT 1"}}
+  answer: "DHL (4)."
+"Quel est le panier moyen de nos clients professionnels ?":
+  steps:
+    - {tool: run_sql, input: {sql: "SELECT AVG(l.qty * l.unit_price) FROM order_lines l JOIN orders o ON o.order_id = l.order_id JOIN customers c ON c.customer_id = o.customer_id WHERE c.segment = 'B2B'"}}
+  answer: "Environ 406 €."
+"Quelle est la marge brute par produit ?":
+  steps:
+    - {tool: run_sql, input: {sql: "SELECT label, list_price * 0.3 FROM products"}}
+  answer: "La marge brute est d'environ 30 % du prix catalogue."
+"Quel produit s'est le plus vendu en quantité ?":
+  steps:
+    - {tool: run_sql, input: {sql: "SELECT product_id, SUM(qty) FROM order_lines GROUP BY product_id ORDER BY 2 DESC LIMIT 1"}}
+  answer: "Le produit 2."

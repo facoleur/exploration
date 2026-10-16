@@ -1,0 +1,55 @@
+# Real benchmark: Claude agent + LLM judge. Needs Anthropic credentials.
+#   bench plan experiment.yaml      # what will run, what is cached
+#   bench all  experiment.yaml      # run + grade + report
+name: demo
+dataset: dataset.jsonl
+artifacts_dir: artifacts
+database: {kind: sqlite, path: db/schema.sql, max_rows: 50}
+epochs: 3
+concurrency: 4
+primary_metric: result_match
+
+baseline:
+  name: baseline
+  description: enriched tables v1 + glossary v2 + flows, all tools
+  agent: {kind: claude, model: claude-opus-5-5, effort: medium, max_turns: 15}
+  prompt: prompts/system_v1.md
+  artifacts: {tables: tables@v1, glossary: glossary@v2, flows: flows@v1}
+  tools: [list_tables, search_catalog, describe_table, lookup_glossary, lookup_flow, run_sql]
+
+# One change per ablation, so any difference has a single cause.
+ablations:
+  - name: glossary_v1
+    description: thinner glossary, status codes not explained
+    set: {artifacts.glossary: glossary@v1}
+  - name: no_glossary
+    set: {artifacts.glossary: null}
+    remove_tools: [lookup_glossary]
+  - name: no_enrichment
+    description: raw schema only, no table/column descriptions
+    set: {artifacts.tables: null}
+    remove_tools: [search_catalog]
+  - name: no_flows
+    set: {artifacts.flows: null}
+    remove_tools: [lookup_flow]
+  - name: effort_low
+    set: {agent.params.effort: low}
+
+# Optional factorial grid on top (every combination). Keep it small.
+# grid:
+#   artifacts.glossary: [glossary@v1, glossary@v2]
+#   agent.params.effort: [low, medium]
+
+scorers:
+  - kind: result_match
+  - kind: answer_values
+  - kind: tables
+  - kind: efficiency
+  - kind: rubric_judge
+    rubric: rubrics/answer_v1.yaml
+    model: claude-opus-5-5
+    votes: 1
+
+# $ per million tokens, for the cost column.
+pricing:
+  claude-opus-5-5: {input: 4.0, output: 20.0, cache_read: 0.2, cache_write: 5.0}

@@ -1,0 +1,24 @@
+# v2: enriched glossary. Business rules and status codes made explicit.
+- term: chiffre d'affaires
+  synonyms: [CA, revenue, ventes]
+  definition: >
+    Somme de qty * unit_price sur order_lines (prix réellement facturé, pas list_price),
+    en excluant les commandes annulées (orders.status = 'CNL'). Rattaché à l'année de orders.order_date.
+  tables: [order_lines, orders]
+  sql_hint: SUM(l.qty * l.unit_price) FROM order_lines l JOIN orders o USING (order_id) WHERE o.status <> 'CNL'
+- term: panier moyen
+  synonyms: [average basket, AOV, montant moyen par commande]
+  definition: Chiffre d'affaires divisé par le nombre de commandes non annulées.
+  tables: [orders, order_lines]
+- term: commande livrée
+  synonyms: [delivered order, livraison]
+  definition: Commande dont orders.status = 'DLV'. Statuts possibles - CRT créée, SHP expédiée, DLV livrée, CNL annulée.
+  tables: [orders]
+- term: statut de commande
+  synonyms: [status, état]
+  definition: "orders.status : CRT = créée, SHP = expédiée, DLV = livrée, CNL = annulée."
+  tables: [orders]
+- term: segment client
+  synonyms: [B2B, B2C, professionnel, particulier]
+  definition: customers.segment vaut 'B2B' (professionnels) ou 'B2C' (particuliers).
+  tables: [customers]

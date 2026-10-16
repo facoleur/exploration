@@ -1,0 +1,13 @@
+# v1: first LLM-generated glossary. Thin definitions, status codes not explained.
+- term: chiffre d'affaires
+  synonyms: [CA, revenue]
+  definition: Montant total des ventes.
+  tables: [order_lines]
+- term: panier moyen
+  synonyms: [average basket, AOV]
+  definition: Montant moyen d'une commande.
+  tables: [orders, order_lines]
+- term: commande livrée
+  synonyms: [delivered order]
+  definition: Commande arrivée chez le client.
+  tables: [orders]

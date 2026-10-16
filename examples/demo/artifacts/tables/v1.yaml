@@ -1,0 +1,44 @@
+customers:
+  description: Un client (professionnel ou particulier).
+  grain: une ligne par client
+  columns:
+    customer_id: identifiant client
+    name: raison sociale ou nom
+    country: code pays ISO-2
+    segment: B2B ou B2C
+orders:
+  description: En-tête de commande.
+  grain: une ligne par commande
+  columns:
+    order_id: identifiant commande
+    customer_id: client ayant passé la commande
+    order_date: date de commande (YYYY-MM-DD)
+    status: code statut de la commande
+  joins: ["orders.customer_id = customers.customer_id", "orders.order_id = order_lines.order_id",
+          "orders.order_id = shipments.order_id"]
+order_lines:
+  description: Lignes de commande, une par produit commandé.
+  grain: une ligne par (commande, produit)
+  columns:
+    order_id: commande
+    product_id: produit
+    qty: quantité commandée
+    unit_price: prix unitaire facturé après remise
+  joins: ["order_lines.product_id = products.product_id"]
+products:
+  description: Catalogue produits.
+  grain: une ligne par produit
+  columns:
+    product_id: identifiant produit
+    label: libellé
+    category: famille produit
+    list_price: prix catalogue avant remise
+shipments:
+  description: Expéditions des commandes par transporteur.
+  grain: une ligne par expédition
+  columns:
+    shipment_id: identifiant expédition
+    order_id: commande expédiée
+    carrier: transporteur
+    shipped_at: date d'expédition
+    delivered_at: date de livraison, NULL si pas encore livrée
